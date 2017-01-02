@@ -27,8 +27,11 @@ public class StationModel {
     private static final String TAG = "StationModel";
     private static final String CUSTOM_API_URL = "http://api.quinnbudan.com/";
     private static final String OC_TRANSPO_URL = "https://api.octranspo1.com/v1.2/";
+    
+    // THIS WILL CAUSE AN ERROR UNLESS YOU PLACE YOUR OWN APP ID AND API KEY IN A RESOURCES FILE
     private static final String APP_ID = App.getContext().getString(R.string.appID);
     private static final String API_KEY = App.getContext().getString(R.string.apiKey);
+    
     private static final String ROUTE_NO = "1"; // static route number for testing
     private static final String STOP_NO = "7659"; // static stop number for testing
     private static final String FORMAT = "json";
