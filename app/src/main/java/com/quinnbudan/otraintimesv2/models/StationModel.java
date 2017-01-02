@@ -25,10 +25,10 @@ public class StationModel {
     private static final String TAG = "StationModel";
     private static final String CUSTOM_API_URL = "http://api.quinnbudan.com/";
     private static final String OC_TRANSPO_URL = "https://api.octranspo1.com/v1.2/";
-    private static final String APP_ID = "3c26a0b7";
-    private static final String API_KEY = "a652171ecd8157753deca1f9724692dc";
-    private static final String ROUTE_NO = "1"; // static route no for testing
-    private static final String STOP_NO = "7659"; // static stop no for testing
+    private static final String APP_ID = "placeholder"; // provide your own APP_ID and API_KEY
+    private static final String API_KEY = "placeholder";
+    private static final String ROUTE_NO = "1"; // static route number for testing
+    private static final String STOP_NO = "7659"; // static stop number for testing
     private static final String FORMAT = "json";
     private static final String DIR1_API_STRING = "Greenboro";
     private static final String DIR2_API_STRING = "Bayview";
