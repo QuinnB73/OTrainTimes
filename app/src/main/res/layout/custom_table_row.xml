@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableRow xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent" android:weightSum="1">
+
+    <Button
+        android:id="@+id/station"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.4"
+        android:textSize="17sp"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:background="@drawable/rounded_button"
+        android:padding="5dp"
+        android:layout_marginBottom="3dp"/>
+
+    <TextView
+        android:id="@+id/time1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.2"
+        android:textAlignment="center"
+        android:textSize="17sp"
+        android:textColor="@color/green"
+        android:padding="5dp"
+        android:background="@drawable/table_underline"/>
+    <TextView
+        android:id="@+id/time2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.2"
+        android:textAlignment="center"
+        android:textSize="17sp"
+        android:textColor="@color/green"
+        android:padding="5dp"
+        android:background="@drawable/table_underline"/>
+    <TextView
+        android:id="@+id/time3"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.2"
+        android:textAlignment="center"
+        android:textSize="17sp"
+        android:textColor="@color/green"
+        android:padding="5dp"
+        android:background="@drawable/table_underline"/>
+</TableRow>
