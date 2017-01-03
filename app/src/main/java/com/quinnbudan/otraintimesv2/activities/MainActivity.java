@@ -126,9 +126,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
         Button stationCell = (Button)row.findViewById(R.id.station);
         stationCell.setText(station.getName());
         stationCell.setTag(station.getDirection());
-        // NOT ADDING THE ONCLICK LISTENER YET BECAUSE THERE IS NOTHING TO BE DISPLAYED IN THAT
-        // ACTIVITY DUE TO THE OC TRANSPO API ISSUE
-        //stationCell.setOnClickListener(this);
+        stationCell.setOnClickListener(this);
         TextView timeCell1 = (TextView)row.findViewById(R.id.time1);
         TextView timeCell2 = (TextView)row.findViewById(R.id.time2);
         TextView timeCell3 = (TextView)row.findViewById(R.id.time3);
