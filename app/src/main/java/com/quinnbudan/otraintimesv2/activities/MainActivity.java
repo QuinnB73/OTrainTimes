@@ -180,7 +180,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
      */
     @Override
     public void taskCompletionResult(ArrayList<String> result){
-        Log.e(TAG, "got it: " + result.toString());
+        Log.d(TAG, "got it: " + result.toString());
         dir1Sched.removeAllViews();
         dir2Sched.removeAllViews();
         for(int i = 0; i < stationsDir1.size(); i++){
