@@ -169,7 +169,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
         Intent intent = new Intent(getApplicationContext(), StationActivity.class);
         Button button = (Button)view;
         String station = (String)button.getText();
-        Log.e(TAG, station);
+        Log.d(TAG, station);
         intent.putExtra("STATION", station);
         intent.putExtra("DIRECTION", (String)button.getTag());
         startActivity(intent);
