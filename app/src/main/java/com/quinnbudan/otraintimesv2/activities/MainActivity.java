@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
     private TableLayout dir2Sched;
 
     /*
-        Callback for the creation of the activity
+     * Callback for the creation of the activity
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
     }
 
     /*
-        Callback to create the options menu for the app bar
+     * Callback to create the options menu for the app bar
      */
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
     }
 
     /*
-        Callback for when an option from the options menu in the app bar is selected
+     * Callback for when an option from the options menu in the app bar is selected
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
     }
 
     /*
-        Initialize the station lists used in this activity
+     * Initialize the station lists used in this activity
      */
     private void initStationLists(){
         stationsDir1 = new ArrayList<>();
@@ -90,15 +90,15 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
         String[] stationNames = stations.getStationNames();
 
         for(int i = 0; i < stationNames.length; i++){
-            stationsDir1.add(new StationModel(stationNames[i], "dir1", this));
-            stationsDir2.add(new StationModel(stationNames[i], "dir2", this));
+            stationsDir1.add(new StationModel(stationNames[i], "dir1", this, this.getApplicationContext()));
+            stationsDir2.add(new StationModel(stationNames[i], "dir2", this, this.getApplicationContext()));
         }
         stationsDir1.remove(0);
         stationsDir2.remove(stationsDir2.size()-1);
     }
 
     /*
-        Initialize the tables and the text views above them
+     * Initialize the tables and the text views above them
      */
     private void initTables(){
         Spanned spannedText = Html.fromHtml("<b>TOWARDS " + DIR1_END_STATION.toUpperCase() + " (<i>GPS</i>)</b>");
@@ -113,7 +113,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
     }
 
     /*
-        Add a row to the tables based on the custom_table_row.xml layout
+     * Add a row to the tables based on the custom_table_row.xml layout
      */
     private void addRow(StationModel station, TableLayout table, ArrayList<String> gpsTimes){
         // setup
@@ -151,7 +151,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
     }
 
     /*
-        Refreshes the GPS schedule for each station
+     * Refreshes the GPS schedule for each station
      */
     private void refresh(){
         Log.d(TAG, "refreshing");
@@ -162,7 +162,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
     }
 
     /*
-        Takes the user to the activity that will display the full schedule for a station
+     * Takes the user to the activity that will display the full schedule for a station
      */
     @Override
     public void onClick(View view){
@@ -176,7 +176,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
     }
 
     /*
-        Once the async Retrofit2 call is completed we update the text fields here
+     * Once the async Retrofit2 call is completed we update the text fields here
      */
     @Override
     public void taskCompletionResult(ArrayList<String> result){

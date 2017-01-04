@@ -1,5 +1,6 @@
 package com.quinnbudan.otraintimesv2.models;
 
+import android.content.Context;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -8,6 +9,7 @@ import com.quinnbudan.otraintimesv2.R;
 import com.quinnbudan.otraintimesv2.activities.App;
 import com.quinnbudan.otraintimesv2.interfaces.OCTranspoWebService;
 import com.quinnbudan.otraintimesv2.interfaces.TaskDelegate;
+import com.quinnbudan.otraintimesv2.tools.RetrofitContainer;
 import com.quinnbudan.otraintimesv2.tools.Stations;
 
 import java.util.ArrayList;
@@ -27,11 +29,6 @@ public class StationModel {
     private static final String TAG = "StationModel";
     private static final String CUSTOM_API_URL = "http://api.quinnbudan.com/";
     private static final String OC_TRANSPO_URL = "https://api.octranspo1.com/v1.2/";
-    
-    // THIS WILL CAUSE AN ERROR UNLESS YOU PLACE YOUR OWN APP ID AND API KEY IN A RESOURCES FILE
-    private static final String APP_ID = App.getContext().getString(R.string.appID);
-    private static final String API_KEY = App.getContext().getString(R.string.apiKey);
-    
     private static final String ROUTE_NO = "1"; // static route number for testing
     private static final String STOP_NO = "7659"; // static stop number for testing
     private static final String FORMAT = "json";
@@ -40,6 +37,8 @@ public class StationModel {
     private static final String DIR1 = "dir1";
     private static final String DIR2 = "dir2";
 
+    private String appId;
+    private String apiKey;
     private String name;
     private String direction;
     private String stopNo;
@@ -48,6 +47,7 @@ public class StationModel {
     private ArrayList<String> gpsSchedule;
     private Stations Stations = com.quinnbudan.otraintimesv2.tools.Stations.singletonInstance;
     private TaskDelegate delegate;
+    private RetrofitContainer retrofitContainer;
 
     public StationModel(String name, String direction, TaskDelegate delegate) {
         this.name = name;
@@ -55,6 +55,19 @@ public class StationModel {
         this.stopNo = Stations.getStopIDs().get(name);
         this.routeNo = Stations.getRouteNos().get(name);
         this.delegate = delegate;
+        retrofitContainer = new RetrofitContainer(OC_TRANSPO_URL);
+        requestGpsSchedule();
+    }
+
+    public StationModel(String name, String direction, TaskDelegate delegate, Context context){
+        this.appId = context.getString(R.string.appID);
+        this.apiKey = context.getString(R.string.apiKey);
+        this.name = name;
+        this.direction = direction;
+        this.stopNo = Stations.getStopIDs().get(name);
+        this.routeNo = Stations.getRouteNos().get(name);
+        this.delegate = delegate;
+        retrofitContainer = new RetrofitContainer(OC_TRANSPO_URL);
         requestGpsSchedule();
     }
 
@@ -83,6 +96,22 @@ public class StationModel {
         return gpsSchedule;
     }
 
+    public String getAppId(){
+        return appId;
+    }
+
+    public String getApiKey(){
+        return apiKey;
+    }
+
+    public void setRetrofitContainer(RetrofitContainer retrofitContainer){
+        this.retrofitContainer = retrofitContainer;
+    }
+
+    public RetrofitContainer getRetrofitContainer(){
+        return retrofitContainer;
+    }
+
     /*
      * Refresh the schedule after it's been retrieved at least once
      */
@@ -96,17 +125,9 @@ public class StationModel {
      */
     private void requestGpsSchedule(){
         final ArrayList<String> tmpGpsScheule = new ArrayList<>();
-        // FOR VERBOSE LOGGING
-        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
-        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-        OkHttpClient client = new OkHttpClient.Builder().addInterceptor(interceptor).build();
 
-        // setup retrofit 2, if we don't use verbose logging then don't set client
-        Gson gson = new GsonBuilder().setLenient().create();
-        Retrofit retrofit = new Retrofit.Builder().baseUrl(OC_TRANSPO_URL).client(client).
-                addConverterFactory(GsonConverterFactory.create(gson)).build();
-        OCTranspoWebService ocTranspoWebService = retrofit.create(OCTranspoWebService.class);
-        Call<TranspoApiResponse> call = ocTranspoWebService.getGpsTimes(APP_ID, API_KEY, routeNo, stopNo, FORMAT);
+        OCTranspoWebService ocTranspoWebService = retrofitContainer.getOcTranspoWebService();
+        Call<TranspoApiResponse> call = ocTranspoWebService.getGpsTimes(appId, apiKey, routeNo, stopNo, FORMAT);
 
         call.enqueue(new Callback<TranspoApiResponse>() { // is an async call
             @Override
