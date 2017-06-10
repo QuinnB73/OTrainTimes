@@ -20,14 +20,11 @@ import org.junit.Before;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.mockito.invocation.InvocationOnMock;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.stubbing.Answer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +45,10 @@ public class StationModelTest {
     private static final String CONFEDERATION_ROUTE_NO = "750";
     private static final String JSON_FORMAT = "json";
     private static final String CONFEDERATION_STOP_LABEL = "Confederation";
+    private static final String DIRECTION_1 = "dir1";
+    private static final String DIRECTION_2 = "dir2";
+    private static final String LABEL_1 = "Confederation";
+    private static final String LABEL_2 = "Greenboro";
 
     @Mock
     private Context mockContext;
@@ -77,19 +78,27 @@ public class StationModelTest {
         MockitoAnnotations.initMocks(this);
     }
 
+    /**
+     * Test that the StationModel successfully gets the app id and api key strings from context
+     */
     @Test
     public void testStringsFromContext(){
+
         when(mockContext.getString(R.string.appID)).thenReturn(FAKE_APP_ID);
         when(mockContext.getString(R.string.apiKey)).thenReturn(FAKE_API_KEY);
 
-        StationModel stationModel = new StationModel(CONFEDERATION_STOP_LABEL, "dir1", mockTaskDelegate, mockContext);
+        StationModel stationModel = new StationModel(LABEL_1, "dir1", mockTaskDelegate, mockContext);
 
         assertEquals(stationModel.getAppId(), FAKE_APP_ID);
         assertEquals(stationModel.getApiKey(), FAKE_API_KEY);
     }
 
+    /**
+     * Test that the requestGpsSchedule successfully results in a valid schedule when
+     * given valid input
+     */
     @Test
-    public void testRequestGpsSchedule() {
+    public void testRequestGpsScheduleSuccess() {
         when(mockContext.getString(R.string.appID)).thenReturn(FAKE_APP_ID);
         when(mockContext.getString(R.string.apiKey)).thenReturn(FAKE_API_KEY);
         when(mockRetrofitContainer.getOcTranspoWebService()).thenReturn(mockOCTranspoWebService);
@@ -99,16 +108,20 @@ public class StationModelTest {
         when(mockResponse.isSuccessful()).thenReturn(true);
         when(mockResponse.errorBody()).thenReturn(null);
 
-        StationModel stationModel = new StationModel(CONFEDERATION_STOP_LABEL, "dir1",
+        StationModel stationModel = new StationModel(LABEL_1, DIRECTION_1,
                 mockTaskDelegate, mockContext, mockRetrofitContainer);
 
         verify(mockOCTranspoWebService.getGpsTimes(FAKE_APP_ID, FAKE_API_KEY, CONFEDERATION_ROUTE_NO,
                 CONFEDERATION_STOP_NO, JSON_FORMAT), times(1)).enqueue(callbackArgumentCaptor.capture());
 
         callbackArgumentCaptor.getValue().onResponse(mockCall, mockResponse);
-        assertEquals(buildExpectedResults(), stationModel.getGpsSchedule());
+        assertEquals(buildExpectedGpsSchedule(), stationModel.getGpsSchedule());
     }
 
+    /**
+     * Builds TranspoApiResponse (uses a chain of builders)
+     * @return TranspoApiResponse
+     */
     private TranspoApiResponse buildTranspoApiResponse(){
         TranspoApiResponse transpoApiResponse = new TranspoApiResponse();
         transpoApiResponse.setGetNextTripsForStopResult(buildGetNextTripsForStopResult());
@@ -126,13 +139,13 @@ public class StationModelTest {
     private Route buildRoute(){
         Route route = new Route();
         RouteDirection dir1 = new RouteDirection();
-        dir1.setDirection("dir1");
-        dir1.setRouteLablel("Greenboro");
+        dir1.setDirection(DIRECTION_1);
+        dir1.setRouteLablel(LABEL_1);
         dir1.setRouteNo(CONFEDERATION_ROUTE_NO);
         dir1.setTrips(buildTrips());
         RouteDirection dir2 = new RouteDirection();
-        dir2.setDirection("dir2");
-        dir2.setRouteLablel("Bayview");
+        dir2.setDirection(DIRECTION_2);
+        dir2.setRouteLablel(LABEL_2);
         dir2.setRouteNo(CONFEDERATION_ROUTE_NO);
         dir2.setTrips(buildTrips());
 
@@ -160,7 +173,11 @@ public class StationModelTest {
         return trips;
     }
 
-    private ArrayList<String> buildExpectedResults(){
+    /**
+     * Builds the expected GPS schedule
+     * @return times
+     */
+    private ArrayList<String> buildExpectedGpsSchedule(){
         String time1 = "5m";
         String time2 = "20m";
         String time3 = "35m";
