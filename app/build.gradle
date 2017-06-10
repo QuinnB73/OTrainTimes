@@ -26,6 +26,10 @@ android {
         exclude 'META-INF/DEPENDENCIES'
         exclude '...'
     }
+
+    testOptions{
+        unitTests.returnDefaultValues = true
+    }
 }
 
 dependencies {

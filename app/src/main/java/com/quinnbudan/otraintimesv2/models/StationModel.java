@@ -1,6 +1,7 @@
 package com.quinnbudan.otraintimesv2.models;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -36,6 +37,7 @@ public class StationModel {
     private static final String DIR2_API_STRING = "Bayview";
     private static final String DIR1 = "dir1";
     private static final String DIR2 = "dir2";
+    private static final long REFRESH_DELAY = 300000;
 
     private String appId;
     private String apiKey;
@@ -48,6 +50,7 @@ public class StationModel {
     private Stations Stations = com.quinnbudan.otraintimesv2.tools.Stations.singletonInstance;
     private TaskDelegate delegate;
     private RetrofitContainer retrofitContainer;
+    private AutoRequesterTask autoRequesterTask;
 
     public StationModel(String name, String direction, TaskDelegate delegate) {
         this.name = name;
@@ -57,6 +60,7 @@ public class StationModel {
         this.delegate = delegate;
         retrofitContainer = new RetrofitContainer(OC_TRANSPO_URL);
         requestGpsSchedule();
+        startAutoRequesterTask();
     }
 
     public StationModel(String name, String direction, TaskDelegate delegate, Context context){
@@ -69,6 +73,21 @@ public class StationModel {
         this.delegate = delegate;
         retrofitContainer = new RetrofitContainer(OC_TRANSPO_URL);
         requestGpsSchedule();
+        startAutoRequesterTask();
+    }
+
+    public StationModel(String name, String direction, TaskDelegate delegate, Context context,
+                        RetrofitContainer retrofitContainer){
+        this.appId = context.getString(R.string.appID);
+        this.apiKey = context.getString(R.string.apiKey);
+        this.name = name;
+        this.direction = direction;
+        this.stopNo = Stations.getStopIDs().get(name);
+        this.routeNo = Stations.getRouteNos().get(name);
+        this.delegate = delegate;
+        this.retrofitContainer = retrofitContainer;
+        requestGpsSchedule();
+        startAutoRequesterTask();
     }
 
     public String getName() {
@@ -116,14 +135,13 @@ public class StationModel {
      * Refresh the schedule after it's been retrieved at least once
      */
     public void refreshGpsSchedule(){
-        // TODO: do on an interval
         requestGpsSchedule();
     }
 
     /*
      * Uses Retrofit2 and OkHttp3 to make requests to the OC Transpo API for the GPS times
      */
-    private void requestGpsSchedule(){
+    public void requestGpsSchedule(){
         final ArrayList<String> tmpGpsScheule = new ArrayList<>();
 
         OCTranspoWebService ocTranspoWebService = retrofitContainer.getOcTranspoWebService();
@@ -182,6 +200,43 @@ public class StationModel {
                         }
                     }
                 }
+            }
+        }
+    }
+
+    private void startAutoRequesterTask(){
+        autoRequesterTask = new AutoRequesterTask();
+        autoRequesterTask.start();
+    }
+
+    private class AutoRequesterTask implements Runnable {
+        private Thread thread;
+        private boolean isRunning;
+
+        public void start(){
+            if(!isRunning) {
+                isRunning = true;
+                thread = new Thread(this);
+                thread.start();
+            }
+        }
+
+        @Override
+        public void run() {
+            while(isRunning){
+                try{
+                    Thread.sleep(REFRESH_DELAY);
+                    refreshGpsSchedule();
+                } catch (Exception e){
+                    Log.e(TAG+"b_thread", e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        public void stop(){
+            if(isRunning){
+                isRunning = false;
             }
         }
     }
