@@ -98,7 +98,7 @@ public class StationModelTest {
      * given valid input
      */
     @Test
-    public void testRequestGpsScheduleSuccess() {
+    public void testRequestGpsScheduleOnResponseSuccess() {
         when(mockContext.getString(R.string.appID)).thenReturn(FAKE_APP_ID);
         when(mockContext.getString(R.string.apiKey)).thenReturn(FAKE_API_KEY);
         when(mockRetrofitContainer.getOcTranspoWebService()).thenReturn(mockOCTranspoWebService);
@@ -116,6 +116,32 @@ public class StationModelTest {
 
         callbackArgumentCaptor.getValue().onResponse(mockCall, mockResponse);
         assertEquals(buildExpectedGpsSchedule(), stationModel.getGpsSchedule());
+    }
+
+    /**
+     * Tests that the gps schedule is not set on a bad response
+     */
+    @Test
+    public void testRequestGpsScheduleOnResponseFailure(){
+        when(mockContext.getString(R.string.appID)).thenReturn(FAKE_APP_ID);
+        when(mockContext.getString(R.string.apiKey)).thenReturn(FAKE_API_KEY);
+        when(mockRetrofitContainer.getOcTranspoWebService()).thenReturn(mockOCTranspoWebService);
+        when(mockOCTranspoWebService.getGpsTimes(FAKE_APP_ID, FAKE_API_KEY, CONFEDERATION_ROUTE_NO,
+                CONFEDERATION_STOP_NO, JSON_FORMAT)).thenReturn(mockCall);
+        when(mockResponse.body()).thenReturn(null);
+        when(mockResponse.isSuccessful()).thenReturn(true);
+        when(mockResponse.errorBody()).thenReturn(null);
+
+        StationModel stationModel = new StationModel(LABEL_1, DIRECTION_1,
+                mockTaskDelegate, mockContext, mockRetrofitContainer);
+
+        verify(mockOCTranspoWebService.getGpsTimes(FAKE_APP_ID, FAKE_API_KEY, CONFEDERATION_ROUTE_NO,
+                CONFEDERATION_STOP_NO, JSON_FORMAT), times(1)).enqueue(callbackArgumentCaptor.capture());
+
+        callbackArgumentCaptor.getValue().onResponse(mockCall, mockResponse);
+
+        // if it failed and an error was logged, the schedule should be null
+        assertNull(stationModel.getGpsSchedule());
     }
 
     /**

@@ -108,7 +108,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
 
         for(int i = 0; i < stationsDir1.size(); i++){
             addRow(stationsDir1.get(i), dir1Sched, stationsDir1.get(i).getGpsSchedule());
-            addRow(stationsDir2.get(i), dir2Sched, stationsDir1.get(i).getGpsSchedule());
+            addRow(stationsDir2.get(i), dir2Sched, stationsDir2.get(i).getGpsSchedule());
         }
     }
 
@@ -139,8 +139,19 @@ public class MainActivity extends AppCompatActivity implements OnClickListener, 
             timeCell3.setText(time);
         } else {
             ArrayList<Spanned> times = new ArrayList<>();
-            for(int i = 0; i < gpsTimes.size(); i++){
-                times.add(Html.fromHtml("<b>" + gpsTimes.get(i) + "</b>"));
+            if(gpsTimes != null) {
+                for (int i = 0; i < gpsTimes.size(); i++) {
+                    times.add(Html.fromHtml("<b>" + gpsTimes.get(i) + "</b>"));
+                }
+                // if less than 3 times returned, fill the rest with N/A
+                for(int i = times.size(); i < 3; i++){
+                    times.add(Html.fromHtml("<b>N/A</b>"));
+                }
+            } else {
+                // if list is null, fill times with N/A
+                for(int i = 0; i < 3; i++) {
+                    times.add(Html.fromHtml("<b>N/A</b>"));
+                }
             }
             timeCell1.setText(times.get(0));
             timeCell2.setText(times.get(1));

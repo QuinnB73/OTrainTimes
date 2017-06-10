@@ -151,16 +151,23 @@ public class StationModel {
             @Override
             public void onResponse(Call<TranspoApiResponse> call, Response<TranspoApiResponse> response) {
                 try {
-                    Log.d(TAG, "RESPONSE: " + response.errorBody().string());
+                    Log.e(TAG, "RESPONSE: " + response.errorBody().string());
                 } catch (Exception e) {
                     // do nothing, no errorBody
                 }
-                if (response.isSuccessful()) {
-                    TranspoApiResponse apiResponse = response.body();
-                    parseTimesFromResponse(apiResponse.getGetNextTripsForStopResult().getRoute().getRouteDirection(), tmpGpsScheule);
-                    Log.d(TAG, "body: " + response.body().toString());
-                    setGpsSchedule(tmpGpsScheule);
-                    delegate.taskCompletionResult(tmpGpsScheule);
+                if(response != null) {
+                    if (response.isSuccessful()) {
+                        try {
+                            TranspoApiResponse apiResponse = response.body();
+                            parseTimesFromResponse(apiResponse.getGetNextTripsForStopResult().getRoute().getRouteDirection(), tmpGpsScheule);
+                            Log.d(TAG, "body: " + response.body().toString());
+                            setGpsSchedule(tmpGpsScheule);
+                            delegate.taskCompletionResult(tmpGpsScheule);
+                        } catch (Exception e){
+                            Log.e(TAG, e.getMessage());
+                            e.printStackTrace();
+                        }
+                    }
                 }
             }
 
